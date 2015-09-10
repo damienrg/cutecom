@@ -37,11 +37,3 @@ endif (APPLE)
 install(TARGETS cutecom DESTINATION ${binInstallDir} )
 
 install(FILES cutecom.1 DESTINATION share/man/man1 )
-
-find_program(KDECONFIG_EXECUTABLE NAMES kde-config )
-
-if (KDECONFIG_EXECUTABLE)
-   # then ask kde-config for the kde data dirs
-   exec_program(${KDECONFIG_EXECUTABLE} ARGS --install apps --expandvars OUTPUT_VARIABLE _apps_DIR )
-   install(FILES cutecom.desktop DESTINATION ${_apps_DIR}/Utilities)
-endif (KDECONFIG_EXECUTABLE)
