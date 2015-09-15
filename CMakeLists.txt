@@ -1,38 +1,24 @@
-cmake_minimum_required(VERSION 2.4.3 FATAL_ERROR )
+cmake_minimum_required(VERSION 3.2 FATAL_ERROR )
 
-project(CuteCom)
+project(cutecom)
 
-set(QT_MIN_VERSION 4.1.0)
-find_package(Qt4 REQUIRED)
+cmake_policy(SET CMP0020 NEW)
+
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5SerialPort REQUIRED)
 
 include_directories(${QT_INCLUDES} ${CMAKE_BINARY_DIR})
-add_definitions(-DQT3_SUPPORT)
 set(cutecomSrcs main.cpp qcppdialogimpl.cpp)
 
-qt4_wrap_cpp(cutecomSrcs qcppdialogimpl.h)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOUIC ON)
 
-qt4_wrap_ui(cutecomSrcs cutecommdlg.ui)
+set(binInstallDir bin)
 
-set(exeType)
-set(binInstallDir bin )
-
-if(APPLE)
-   # with cmake < 2.6 install(TARGETS ... BUNDLE DESTINATION ... ) doesn't work:
-   cmake_minimum_required(VERSION 2.6 FATAL_ERROR )
-   set(exeType MACOSX_BUNDLE)
-   set(binInstallDir /Applications )
-   # hint to linker for indirect referenced libs inside qt3support
-   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -dylib_file QtSql.framework/Versions/4/QtSql:/Library/Frameworks/QtSql.framework/Versions/4/QtSql")
-   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -dylib_file QtNetwork.framework/Versions/4/QtNetwork:/Library/Frameworks/QtNetwork.framework/Versions/4/QtNetwork")
-   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -dylib_file QtXml.framework/Versions/4/QtXml:/Library/Frameworks/QtXml.framework/Versions/4/QtXml")
-endif(APPLE)
-
-add_executable(cutecom ${exeType} ${cutecomSrcs})
-target_link_libraries(cutecom ${QT_QT3SUPPORT_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
-
-if (APPLE)
-   set_target_properties(cutecom PROPERTIES OUTPUT_NAME CuteCom)
-endif (APPLE)
+add_executable(cutecom ${cutecomSrcs} ${uiHeaders})
+target_link_libraries(cutecom Qt5::Widgets Qt5::Core Qt5::SerialPort)
 
 install(TARGETS cutecom DESTINATION ${binInstallDir} )
 

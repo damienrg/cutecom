@@ -21,8 +21,6 @@
 
 #include "ui_cutecommdlg.h"
 
-#include <termios.h>
-
 #include <qsocketnotifier.h>
 #include <qtimer.h>
 #include <qdatetime.h>
@@ -32,11 +30,13 @@
 #include <QEvent>
 #include <QWidget>
 
+#include <QtSerialPort>
+
 #define CUTECOMM_BUFSIZE (4096)
 
 class QListWidgetItem;
 class QResizeEvent;
-class Q3Process;
+class QProcess;
 class QProgressDialog;
 class QFileDialog;
 
@@ -48,7 +48,7 @@ class QCPPDialogImpl:public QWidget, public Ui::CuteCommDlg
       virtual bool eventFilter(QObject* watched, QEvent *e);
    protected slots:
       void execCmd();
-      void readData(int fd);
+      void readData();
       void sendFile();
       void showAboutMsg();
 
@@ -80,12 +80,9 @@ class QCPPDialogImpl:public QWidget, public Ui::CuteCommDlg
       virtual void resizeEvent(QResizeEvent *e);
 
       bool m_isConnected;
-      int m_fd;
-      struct termios m_oldtio;
       unsigned int m_cmdBufIndex;
-      QSocketNotifier *m_notifier;
       char m_buf[CUTECOMM_BUFSIZE];
-      Q3Process *m_sz;
+      QProcess *m_sz;
       QProgressDialog *m_progress;
       int m_progressStepSize;
 
@@ -103,6 +100,7 @@ class QCPPDialogImpl:public QWidget, public Ui::CuteCommDlg
 
       QFile m_logFile;
 
+      QSerialPort serialPort;
 };
 
 #endif
