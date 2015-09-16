@@ -148,14 +148,10 @@ QCPPDialogImpl::QCPPDialogImpl(QWidget* parent)
 void QCPPDialogImpl::fillBaudCb()
 {
    QStringList baudRates;
-   baudRates << "1200"
-             << "2400"
-             << "4800"
-             << "9600"
-             << "19200"
-             << "38400"
-             << "57600"
-             << "115200";
+   foreach(qint32 baudrate, QSerialPortInfo::standardBaudRates())
+   {
+      baudRates << QString::number(baudrate);
+   }
    m_baudCb->addItems(baudRates);
    m_baudCb->setCurrentIndex(m_baudCb->count() - 1);
 }
@@ -242,8 +238,12 @@ void QCPPDialogImpl::readSettings()
    QString defaultBaud = settings.value("/cutecom/Baud", "").toString();
    if (!defaultBaud.isEmpty())
    {
-     m_baudCb->setCurrentIndex(0);
-     m_baudCb->setEditText(defaultBaud);
+     int index = m_baudCb->findText(defaultBaud);
+     if (index == -1)
+     {
+       index = m_baudCb->count() - 1;
+     }
+     m_baudCb->setCurrentIndex(index);
    }
    m_dataBitsCb->setCurrentIndex(settings.value("/cutecom/Databits", 3).toInt());
    m_parityCb->setCurrentIndex(settings.value("/cutecom/Parity", 0).toInt());
